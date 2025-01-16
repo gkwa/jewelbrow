@@ -65,6 +65,8 @@ chezmoi destroy --force /home/user/.config/old_app/config.toml
 
 ## Status Types
 
+Copied from https://www.chezmoi.io/reference/commands/status/
+
 First column indicates the difference between the last state written by chezmoi and the actual state:
 
 - `A` - Entry was created
