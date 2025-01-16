@@ -1,0 +1,63 @@
+version: 2
+before:
+  hooks:
+  - go mod tidy
+  - go generate ./...
+builds:
+- env:
+  - CGO_ENABLED=0
+  goos:
+  - linux
+  - windows
+  - darwin
+  main: main.go
+  goarch:
+  - amd64
+  binary: jewelbrow
+  id: jewelbrow
+  ldflags:
+  - -s -w
+    -X "github.com/gkwa/jewelbrow/version.Version={{ .Version }}"
+    -X "github.com/gkwa/jewelbrow/version.Date={{ .CommitDate }}"
+    -X "github.com/gkwa/jewelbrow/version.GoVersion={{ .Env.GOVERSION }}"
+    -X "github.com/gkwa/jewelbrow/version.ShortGitSHA={{ .ShortCommit }}"
+    -X "github.com/gkwa/jewelbrow/version.FullGitSHA={{ .FullCommit }}"
+archives:
+- format: tar.gz
+  name_template: |-
+    jewelbrow_ {{- title .Os }}_ {{- if eq .Arch "amd64" }}x86_64
+                               {{- else if eq .Arch "386" }}i386
+                               {{- else }}
+                               {{ .Arch }}
+                               {{ end }}
+                               {{- if .Arm }}v{{ .Arm }}{{ end }}
+  format_overrides:
+  - goos: windows
+    format: zip
+checksum:
+  name_template: checksums.txt
+snapshot:
+  version_template: '{{ incpatch .Version }}-next'
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+brews:
+- name: jewelbrow
+  directory: Formula
+  homepage: https://github.com/gkwa/jewelbrow
+  repository:
+    owner: gkwa
+    name: homebrew-tools
+    branch: main
+scoops:
+- name: jewelbrow
+  homepage: https://github.com/gkwa/jewelbrow
+  description: "Description of the jewelbrow project"
+  license: MIT
+  repository:
+    owner: gkwa
+    name: scoop-bucket
+    branch: master
