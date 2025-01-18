@@ -1,12 +1,7 @@
 import pathlib
-import shlex
 import sys
 
-from .. import parser
-
-
-def _escape_path(path: str) -> str:
-    return shlex.quote(path) if " " in path else path
+from .. import parser, paths
 
 
 def diff_command(file_input: str | None = None) -> None:
@@ -19,16 +14,16 @@ def diff_command(file_input: str | None = None) -> None:
     parser_inst = parser.ChezmoiStatusParser()
     entries = parser_inst.parse_status_output(status_output)
 
-    paths = []
+    commands = []
     home = pathlib.Path.home()
 
     # Individual commands
     for entry in entries:
-        abs_path = _escape_path(str(home / entry.path))
-        paths.append(abs_path)
+        abs_path = paths.escape_path(str(home / entry.path))
+        commands.append(abs_path)
         print(f"chezmoi diff {abs_path}")
 
     # Batch command
-    if paths:
+    if commands:
         print("\n# Batch command:")
-        print(f"chezmoi diff {' '.join(paths)}")
+        print(f"chezmoi diff {' '.join(commands)}")
